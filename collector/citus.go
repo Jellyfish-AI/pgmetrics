@@ -230,7 +230,7 @@ func (c *collector) getCitusLocks(currdb string) {
 	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
 	defer cancel()
 
-	q := `SELECT waiting_pid, blocking_pid, blocked_statement,
+	q := `SELECT waiting_gpid, blocking_gpid, blocked_statement,
 			current_statement_in_blocking_process, waiting_node_id,
 			blocking_node_id, waiting_node_name, blocking_node_name,
 			waiting_node_port, blocking_node_port
@@ -244,7 +244,7 @@ func (c *collector) getCitusLocks(currdb string) {
 
 	for rows.Next() {
 		var l pgmetrics.CitusLock
-		if err := rows.Scan(&l.WaitingPID, &l.BlockingPID, &l.BlockedStmt,
+		if err := rows.Scan(&l.WaitingGPID, &l.BlockingGPID, &l.BlockedStmt,
 			&l.CurrStmt, &l.WaitingNodeID, &l.BlockingNodeID,
 			&l.WaitingNodeName, &l.BlockingNodeName, &l.WaitingNodePort,
 			&l.BlockingNodePort); err != nil {

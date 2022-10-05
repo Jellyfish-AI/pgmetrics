@@ -799,8 +799,8 @@ type CitusBackend struct {
 
 // CitusLock represents a single row from citus_lock_waits. Added in schema 1.9.
 type CitusLock struct {
-	WaitingPID       int    `json:"waiting_pid"`
-	BlockingPID      int    `json:"blocking_pid"`
+	WaitingGPID       int    `json:"waiting_gpid"`
+	BlockingGPID      int    `json:"blocking_gpid"`
 	BlockedStmt      string `json:"blocked_statement"`
 	CurrStmt         string `json:"current_statement_in_blocking_process"`
 	WaitingNodeID    int    `json:"waiting_node_id"`
