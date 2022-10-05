@@ -180,11 +180,6 @@ func (c *collector) getCitusBackends(table string) []pgmetrics.CitusBackend {
 			COALESCE(wait_event_type, ''), COALESCE(wait_event, ''),
 			COALESCE(state, ''), COALESCE(backend_xid, ''),
 			COALESCE(backend_xmin, ''), LEFT(COALESCE(query, ''), $1),
-			COALESCE(query_hostname, ''), COALESCE(query_hostport, 0),
-			COALESCE(master_query_host_name, ''),
-			COALESCE(master_query_host_port, 0),
-			COALESCE(transaction_number, 0),
-			COALESCE(EXTRACT(EPOCH FROM transaction_stamp)::bigint, 0)
 		  FROM %s ORDER BY pid ASC`
 	q = fmt.Sprintf(q, table)
 	rows, err := c.db.QueryContext(ctx, q, c.sqlLength)
