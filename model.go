@@ -789,12 +789,6 @@ type CitusStatement struct {
 // citus_worker_stat_activity. Added in schema 1.9.
 type CitusBackend struct {
 	Backend                    // also include all fields from pg_stat_activity
-	QueryHostname       string `json:"query_hostname"`
-	QueryPort           int    `json:"query_port"`
-	MasterQueryHostname string `json:"master_query_hostname"`
-	MasterQueryPort     int    `json:"master_query_port"`
-	TxNumber            int64  `json:"transaction_number"`
-	TxStamp             int64  `json:"transaction_stamp"`
 }
 
 // CitusLock represents a single row from citus_lock_waits. Added in schema 1.9.
