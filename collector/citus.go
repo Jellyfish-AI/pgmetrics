@@ -195,9 +195,7 @@ func (c *collector) getCitusBackends(table string) []pgmetrics.CitusBackend {
 		if err := rows.Scan(&b.DBName, &b.RoleName, &b.ApplicationName,
 			&b.PID, &b.ClientAddr, &b.BackendStart, &b.XactStart, &b.QueryStart,
 			&b.StateChange, &b.WaitEventType, &b.WaitEvent, &b.State,
-			&b.BackendXid, &b.BackendXmin, &b.Query, &b.QueryHostname,
-			&b.QueryPort, &b.MasterQueryHostname, &b.MasterQueryPort,
-			&b.TxNumber, &b.TxStamp); err != nil {
+			&b.BackendXid, &b.BackendXmin, &b.Query); err != nil {
 			log.Printf("warning: %s query failed: %v", table, err)
 			return nil
 		}
@@ -217,7 +215,7 @@ func (c *collector) getCitusDistActivity(currdb string) {
 
 // citus_worker_stat_activity
 func (c *collector) getCitusWorkerActivity(currdb string) {
-	c.result.Citus[currdb].WorkerBackends = c.getCitusBackends("citus_worker_stat_activity")
+	c.result.Citus[currdb].WorkerBackends = c.getCitusBackends("citus_stat_activity")
 }
 
 // citus_lock_waits
