@@ -225,8 +225,7 @@ func (c *collector) getCitusLocks(currdb string) {
 
 	q := `SELECT waiting_gpid, blocking_gpid, blocked_statement,
 			current_statement_in_blocking_process, waiting_nodeid,
-			blocking_nodeid, waiting_node_name, blocking_node_name,
-			waiting_node_port, blocking_node_port 
+			blocking_nodeid  
           FROM citus_lock_waits`
 	rows, err := c.db.QueryContext(ctx, q)
 	if err != nil {
