@@ -179,7 +179,7 @@ func (c *collector) getCitusBackends(table string) []pgmetrics.CitusBackend {
 			COALESCE(EXTRACT(EPOCH FROM state_change)::bigint, 0),
 			COALESCE(wait_event_type, ''), COALESCE(wait_event, ''),
 			COALESCE(state, ''), COALESCE(backend_xid, ''),
-			COALESCE(backend_xmin, ''), LEFT(COALESCE(query, ''), $1),
+			COALESCE(backend_xmin, ''), LEFT(COALESCE(query, ''), $1) 
 		  FROM %s ORDER BY pid ASC`
 	q = fmt.Sprintf(q, table)
 	rows, err := c.db.QueryContext(ctx, q, c.sqlLength)
@@ -224,9 +224,9 @@ func (c *collector) getCitusLocks(currdb string) {
 	defer cancel()
 
 	q := `SELECT waiting_gpid, blocking_gpid, blocked_statement,
-			current_statement_in_blocking_process, waiting_node_id,
-			blocking_node_id, waiting_node_name, blocking_node_name,
-			waiting_node_port, blocking_node_port
+			current_statement_in_blocking_process, waiting_nodeid,
+			blocking_nodeid, waiting_node_name, blocking_node_name,
+			waiting_node_port, blocking_node_port 
           FROM citus_lock_waits`
 	rows, err := c.db.QueryContext(ctx, q)
 	if err != nil {
