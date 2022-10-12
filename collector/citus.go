@@ -179,12 +179,7 @@ func (c *collector) getCitusBackends(table string) []pgmetrics.CitusBackend {
 			COALESCE(EXTRACT(EPOCH FROM state_change)::bigint, 0),
 			COALESCE(wait_event_type, ''), COALESCE(wait_event, ''),
 			COALESCE(state, ''), COALESCE(backend_xid, ''),
-			COALESCE(backend_xmin, ''), LEFT(COALESCE(query, ''), $1),
-			COALESCE(query_hostname, ''), COALESCE(query_hostport, 0),
-			COALESCE(master_query_host_name, ''),
-			COALESCE(master_query_host_port, 0),
-			COALESCE(transaction_number, 0),
-			COALESCE(EXTRACT(EPOCH FROM transaction_stamp)::bigint, 0)
+			COALESCE(backend_xmin, ''), LEFT(COALESCE(query, ''), $1) 
 		  FROM %s ORDER BY pid ASC`
 	q = fmt.Sprintf(q, table)
 	rows, err := c.db.QueryContext(ctx, q, c.sqlLength)
@@ -200,9 +195,7 @@ func (c *collector) getCitusBackends(table string) []pgmetrics.CitusBackend {
 		if err := rows.Scan(&b.DBName, &b.RoleName, &b.ApplicationName,
 			&b.PID, &b.ClientAddr, &b.BackendStart, &b.XactStart, &b.QueryStart,
 			&b.StateChange, &b.WaitEventType, &b.WaitEvent, &b.State,
-			&b.BackendXid, &b.BackendXmin, &b.Query, &b.QueryHostname,
-			&b.QueryPort, &b.MasterQueryHostname, &b.MasterQueryPort,
-			&b.TxNumber, &b.TxStamp); err != nil {
+			&b.BackendXid, &b.BackendXmin, &b.Query); err != nil {
 			log.Printf("warning: %s query failed: %v", table, err)
 			return nil
 		}
@@ -222,7 +215,7 @@ func (c *collector) getCitusDistActivity(currdb string) {
 
 // citus_worker_stat_activity
 func (c *collector) getCitusWorkerActivity(currdb string) {
-	c.result.Citus[currdb].WorkerBackends = c.getCitusBackends("citus_worker_stat_activity")
+	c.result.Citus[currdb].WorkerBackends = c.getCitusBackends("citus_stat_activity")
 }
 
 // citus_lock_waits
@@ -230,10 +223,9 @@ func (c *collector) getCitusLocks(currdb string) {
 	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
 	defer cancel()
 
-	q := `SELECT waiting_pid, blocking_pid, blocked_statement,
-			current_statement_in_blocking_process, waiting_node_id,
-			blocking_node_id, waiting_node_name, blocking_node_name,
-			waiting_node_port, blocking_node_port
+	q := `SELECT waiting_gpid, blocking_gpid, blocked_statement,
+			current_statement_in_blocking_process, waiting_nodeid,
+			blocking_nodeid  
           FROM citus_lock_waits`
 	rows, err := c.db.QueryContext(ctx, q)
 	if err != nil {
@@ -244,7 +236,7 @@ func (c *collector) getCitusLocks(currdb string) {
 
 	for rows.Next() {
 		var l pgmetrics.CitusLock
-		if err := rows.Scan(&l.WaitingPID, &l.BlockingPID, &l.BlockedStmt,
+		if err := rows.Scan(&l.WaitingGPID, &l.BlockingGPID, &l.BlockedStmt,
 			&l.CurrStmt, &l.WaitingNodeID, &l.BlockingNodeID,
 			&l.WaitingNodeName, &l.BlockingNodeName, &l.WaitingNodePort,
 			&l.BlockingNodePort); err != nil {
